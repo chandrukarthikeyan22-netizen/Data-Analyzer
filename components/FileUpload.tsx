@@ -47,7 +47,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onDataLoaded, isLoading }) => {
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
       <div className="mb-8 space-y-4">
         <h1 className="text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">
-          Nebula Analytics
+          Universal Data Analyzer
         </h1>
         <p className="text-xl text-slate-400 max-w-2xl mx-auto">
           The Universal Data Analyzer. Drop any CSV dataset to instantly generate a professional, AI-powered BI dashboard with insights, forecasts, and recommendations.

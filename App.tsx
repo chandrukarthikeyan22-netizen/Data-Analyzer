@@ -53,14 +53,14 @@ const App: React.FC = () => {
        <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white p-4">
          <div className="max-w-md text-center">
             <h2 className="text-2xl font-bold text-red-500 mb-2">API Key Missing</h2>
-            <p className="text-slate-400">Please provide a valid `process.env.API_KEY` to run Nebula Analytics.</p>
+            <p className="text-slate-400">Please provide a valid `process.env.API_KEY` to run Universal Data Analyzer.</p>
          </div>
        </div>
      )
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans">
+    <div className="min-h-screen bg-slate-900 text-slate-100">
       {error && (
         <div className="fixed top-4 right-4 bg-red-500/10 border border-red-500 text-red-500 px-6 py-4 rounded-xl shadow-2xl z-50 flex items-center gap-3 backdrop-blur-md">
            <span className="text-xl">⚠️</span>
