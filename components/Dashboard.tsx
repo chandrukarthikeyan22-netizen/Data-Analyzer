@@ -1,7 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import { DashboardConfig, DataRow, ColumnInfo } from '../types';
+import { DashboardConfig, DataRow, ColumnInfo, AdvancedAnalyticsResult } from '../types';
 import ChartCard from './ChartCard';
 import { calculateKPI } from '../utils';
+import { performAdvancedAnalysis } from '../services/geminiService';
+import AdvancedAnalytics from './AdvancedAnalytics';
 
 interface DashboardProps {
   config: DashboardConfig;
@@ -12,6 +14,9 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ config, data, columns, onReset }) => {
   const [filters, setFilters] = useState<Record<string, string>>({});
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [loadingAdvanced, setLoadingAdvanced] = useState(false);
+  const [advancedData, setAdvancedData] = useState<AdvancedAnalyticsResult | null>(null);
 
   // Get string columns for filter dropdowns
   const filterableColumns = columns.filter(c => c.type === 'string' && c.uniqueValues > 1 && c.uniqueValues < 30);
@@ -35,8 +40,30 @@ const Dashboard: React.FC<DashboardProps> = ({ config, data, columns, onReset })
     setFilters(newFilters);
   };
 
+  const handleRunAdvancedAnalysis = async () => {
+    try {
+        setLoadingAdvanced(true);
+        // Only run if we haven't already
+        if (!advancedData) {
+            const results = await performAdvancedAnalysis(columns, data);
+            setAdvancedData(results);
+        }
+        setShowAdvanced(true);
+    } catch (e) {
+        console.error("Advanced analysis failed", e);
+        alert("Failed to generate advanced analytics. Please check your API key or try again.");
+    } finally {
+        setLoadingAdvanced(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#0f172a] p-6 pb-20">
+      {/* Advanced Analytics Modal */}
+      {showAdvanced && advancedData && (
+          <AdvancedAnalytics data={advancedData} onClose={() => setShowAdvanced(false)} />
+      )}
+
       {/* Header */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 border-b border-slate-800 pb-6">
         <div>
@@ -49,16 +76,34 @@ const Dashboard: React.FC<DashboardProps> = ({ config, data, columns, onReset })
           <p className="text-slate-400 text-sm ml-14">Domain: <span className="text-cyan-400 font-semibold">{config.domain}</span></p>
         </div>
         
-        <div className="flex gap-3">
-             <button 
-            onClick={onReset}
-            className="px-4 py-2 text-sm font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition-colors"
-          >
-            Upload New File
-          </button>
-          <button className="px-4 py-2 text-sm font-medium text-white bg-cyan-600 hover:bg-cyan-500 rounded-lg shadow-lg shadow-cyan-900/50 transition-colors">
-            Export Report
-          </button>
+        <div className="flex gap-3 items-center">
+            <button 
+                onClick={handleRunAdvancedAnalysis}
+                disabled={loadingAdvanced}
+                className={`px-5 py-2.5 text-sm font-bold text-white rounded-lg transition-all flex items-center gap-2 border border-purple-500/30
+                    ${loadingAdvanced 
+                        ? 'bg-purple-900/50 cursor-wait' 
+                        : 'bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 shadow-lg shadow-purple-900/40'
+                    }`}
+            >
+                {loadingAdvanced ? (
+                    <>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        Running ML Models...
+                    </>
+                ) : (
+                    <>
+                        <span>🔮</span> Forecast & ML Analysis
+                    </>
+                )}
+            </button>
+            <div className="h-8 w-px bg-slate-700 mx-2"></div>
+            <button 
+                onClick={onReset}
+                className="px-4 py-2 text-sm font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition-colors"
+            >
+                Upload New
+            </button>
         </div>
       </header>
 

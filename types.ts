@@ -40,3 +40,46 @@ export interface Filter {
   column: string;
   value: string;
 }
+
+// --- New ML/Advanced Analytics Types ---
+
+export interface MLForecast {
+  suitable: boolean;
+  label: string; // "Revenue Forecast", etc.
+  data: { date: string; value: number; type: 'historical' | 'forecast' }[];
+  insight: string;
+}
+
+export interface MLRegression {
+  suitable: boolean;
+  label: string;
+  xAxis: string;
+  yAxis: string;
+  data: { x: number; y: number; regressionLine: number }[];
+  rSquared: number;
+  insight: string;
+}
+
+export interface MLClustering {
+  suitable: boolean;
+  label: string;
+  xAxis: string;
+  yAxis: string;
+  data: { x: number; y: number; cluster: string; name: string }[];
+  insight: string;
+}
+
+export interface MLDistribution {
+  suitable: boolean;
+  label: string;
+  column: string;
+  data: { range: string; count: number }[]; // Histogram bins
+  insight: string;
+}
+
+export interface AdvancedAnalyticsResult {
+  forecast: MLForecast;
+  regression: MLRegression;
+  clustering: MLClustering;
+  distribution: MLDistribution;
+}
